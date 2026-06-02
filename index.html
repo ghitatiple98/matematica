@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematică GT </title>
+    <title>Matematică Hub — Pro v7 Securizat Profesional</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -38,7 +38,6 @@
         header h1 { margin: 0; color: var(--primary); font-size: 2.5rem; }
         header p { color: var(--text-mut); margin-top: 5px; }
 
-        /* Structură flexibilă în funcție de rol (Admin vs Vizitator) */
         .container {
             display: grid;
             grid-template-columns: 1fr;
@@ -50,7 +49,6 @@
             body.mod-vizitator .container { grid-template-columns: 1fr; }
         }
 
-        /* Ascundere elemente de admin pentru vizitatori */
         body.mod-vizitator .zona-admin {
             display: none !important;
         }
@@ -108,15 +106,29 @@
         .btn-mic-sterge { background: #ef4444; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem; }
         
         #status-incarcare { background: #1e3a8a; color: #93c5fd; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; border: 1px solid #2563eb;}
-        #banner-admin { background: #7c2d12; color: #ffedd5; padding: 6px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ea580c; display: none; }
+        
+        /* Panou portocaliu pentru autorizare */
+        #panou-autorizare { background: #7c2d12; color: #ffedd5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ea580c; display: none; }
+        .flex-auth { display: flex; gap: 10px; margin-top: 8px; }
+        .flex-auth input { flex: 1; padding: 8px; }
+        .flex-auth button { background: #ea580c; color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
-<body class="mod-vizitator"> <header>
-        <h1> Matematică by T A G </h1>
+<body class="mod-vizitator">
+
+    <header>
+        <h1>📐 Matematică Hub Pro</h1>
         <p id="subtitlu-pagina">Platformă de studiu și testare online</p>
     </header>
 
-    <div id="banner-admin">🛠️ MOD ADMINISTRATOR ACTIVAT: Ai drepturi de adăugare și ștergere.</div>
+    <div id="panou-autorizare">
+        <strong>🔒 Autentificare Administrator Obligatorie:</strong>
+        <div class="flex-auth">
+            <input type="password" id="cheie-secreta-input" placeholder="Introduceți parola de securitate...">
+            <button onclick="salveazaCheiaLocala()">Conectare</button>
+        </div>
+    </div>
+
     <div id="status-incarcare">🔄 Se conectează la baza de date...</div>
 
     <div class="container">
@@ -210,16 +222,12 @@
     <script>
         const CLOUD_URL = 'https://kvdb.io/6gZ2k922nZ6Y2K964A8U8M/mate_hub_data';
 
-        let categorii = [
-            { id: "teorie", nume: "📘 Teorie", tip: "teorie" },
-            { id: "probleme", nume: "📝 Probleme", tip: "probleme" },
-            { id: "teste", nume: "⏱️ Teste Grilă", tip: "teste" }
-        ];
+        let categorii = [];
         let database = [];
-        let tabCurent = "teorie"; 
+        let tabCurent = ""; 
         let scorCorect = 0;
         let intrebariRespondente = 0;
-        let esteAdmin = false; // Implicit, utilizatorul nu este admin
+        let esteAdmin = false;
 
         const form = document.getElementById('mainForm');
         const container = document.getElementById('afisaj-materiale');
@@ -227,16 +235,28 @@
         const btnSalveaza = document.getElementById('btn-salveaza');
         const btnCat = document.getElementById('btn-creeaza-cat');
 
-        // VERIFICĂ DACĂ LINK-UL CONȚINE PARAMETRUL SECRET PENTRU ADMIN
-        function verificaDrepturiAdmin() {
+        // VERIFICARE PARAMETRU LINK
+        function verificaLinkAdmin() {
             const parametriiLink = new URLSearchParams(window.location.search);
             if (parametriiLink.get('admin') === 'da') {
                 esteAdmin = true;
-                document.body.classList.remove('mod-vizitator');
-                document.body.classList.add('mod-admin');
-                document.getElementById('banner-admin').style.display = 'block';
-                document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ de Gestionare";
+                document.getElementById('panou-autorizare').style.display = 'block';
             }
+        }
+
+        // SALVEAZĂ PAROLA ÎN MEMORIA BROWSERULUI TĂU PENTRU A NU O SCRIE DE FIECARE DATĂ
+        function salveazaCheiaLocala() {
+            const valoare = document.getElementById('cheie-secreta-input').value.trim();
+            if(valoare) {
+                localStorage.setItem('mate_hub_secret_key', valoare);
+                alert("Parola a fost salvată local! Reîncărcăm pagina pentru activare.");
+                window.location.reload();
+            }
+        }
+
+        // OBTINE PAROLA DIN MEMORIE (DACA EXISTA) SAU ATRIBUIE VALOARE INVALIDA
+        function iaCheiaDeSecuritate() {
+            return localStorage.getItem('mate_hub_secret_key') || 'fara_cheie';
         }
 
         async function incarcaDateDinCloud() {
@@ -244,14 +264,22 @@
                 const raspuns = await fetch(CLOUD_URL);
                 if (raspuns.status === 200) {
                     const dateServer = await raspuns.json();
-                    if (dateServer.categorii) categorii = dateServer.categorii;
-                    if (dateServer.database) database = dateServer.database;
+                    categorii = dateServer.categorii || [{ id: "teorie", nume: "📘 Teorie", tip: "teorie" }];
+                    database = dateServer.database || [];
                     tabCurent = categorii.length > 0 ? categorii[0].id : '';
                 }
+                
                 statusBox.style.backgroundColor = "#065f46";
                 statusBox.style.color = "#34d399";
                 statusBox.style.borderColor = "#10b981";
                 statusBox.innerText = "✅ Conectat la baza de date online.";
+
+                // Daca ai deschis ca admin si ai o parola setata, deblocam vizual interfata
+                if (esteAdmin && iaCheiaDeSecuritate() !== 'fara_cheie') {
+                    document.body.classList.remove('mod-vizitator');
+                    document.body.classList.add('mod-admin');
+                    document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ Securizat";
+                }
                 
                 btnSalveaza.disabled = false;
                 btnSalveaza.innerText = "Salvează pe Site";
@@ -262,34 +290,38 @@
                 ajusteazaFormular();
                 afiseazaDate();
             } catch (eroare) {
-                console.error(eroare);
-                statusBox.style.backgroundColor = "#991b1b";
-                statusBox.style.color = "#f87171";
-                statusBox.innerText = "❌ Eroare de rețea la descarcare.";
-                construiesteMeniuri();
-                ajusteazaFormular();
-                afiseazaDate();
+                statusBox.innerText = "❌ Eroare la descarcarea datelor.";
             }
         }
 
         async function salveazaInCloud() {
-            if (!esteAdmin) return; // Un vizitator normal nu poate declanșa salvarea
             try {
                 statusBox.style.backgroundColor = "#1e3a8a";
                 statusBox.style.color = "#93c5fd";
-                statusBox.innerText = "🔄 Se salvează modificările în Cloud...";
+                statusBox.innerText = "🔄 Se trimit datele criptate în Cloud...";
                 
-                await fetch(CLOUD_URL, {
+                // Trimitem schimbarile adăugând în Header cheia ta secreta (parola ta devine cheie de scriere pe server)
+                const raspuns = await fetch(CLOUD_URL, {
                     method: 'POST',
                     body: JSON.stringify({ categorii: categorii, database: database }),
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + iaCheiaDeSecuritate()
+                    }
                 });
                 
-                statusBox.style.backgroundColor = "#065f46";
-                statusBox.style.color = "#34d399";
-                statusBox.innerText = "✅ Modificările au fost salvate cu succes în Cloud!";
+                if(raspuns.status === 401 || raspuns.status === 403) {
+                    statusBox.style.backgroundColor = "#991b1b";
+                    statusBox.style.color = "#f87171";
+                    statusBox.innerText = "❌ EROARE: Parola introdusă este greșită! Serverul a respins modificarea.";
+                    alert("Parolă incorectă! Schimbările tale NU s-au salvat online.");
+                } else {
+                    statusBox.style.backgroundColor = "#065f46";
+                    statusBox.style.color = "#34d399";
+                    statusBox.innerText = "✅ Securizat! Modificările au fost salvate cu succes în Cloud.";
+                }
             } catch (e) {
-                statusBox.innerText = "⚠️ Eroare la salvarea online!";
+                statusBox.innerText = "⚠️ Eroare tehnică la salvare!";
             }
         }
 
@@ -301,11 +333,6 @@
             containerMeniu.innerHTML = '';
             selectFormular.innerHTML = '';
             listaSetari.innerHTML = '';
-
-            if (categorii.length === 0) {
-                containerMeniu.innerHTML = '<p style="color:var(--text-mut); padding:10px;">Nicio categorie disponibilă.</p>';
-                return;
-            }
 
             categorii.forEach(cat => {
                 const btn = document.createElement('button');
@@ -322,7 +349,7 @@
 
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <span><strong>${cat.nume}</strong> <small style="color:var(--text-mut)">[${cat.tip}]</small></span>
+                        <span><strong>${cat.nume}</strong></span>
                         <button class="btn-mic-sterge" onclick="stergeCategorie('${cat.id}')">Șterge</button>
                     `;
                     listaSetari.appendChild(li);
@@ -331,15 +358,13 @@
         }
 
         function adaugaCategorieNoua() {
-            if (!esteAdmin) return;
             const numeInput = document.getElementById('nouaCategorieNume');
             const tipSelect = document.getElementById('nouaCategorieTip');
             const nume = numeInput.value.trim();
             const tip = tipSelect.value;
 
-            if(!nume) { alert("Introdu un nume valid!"); return; }
+            if(!nume) return;
             const id = nume.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if(categorii.some(c => c.id === id)) { alert("Această categorie există deja!"); return; }
 
             categorii.push({ id: id, nume: nume, tip: tip });
             numeInput.value = '';
@@ -347,27 +372,21 @@
             
             construiesteMeniuri();
             schimbaTab(tabCurent, null);
-            ajusteazaFormular();
             salveazaInCloud();
         }
 
         function stergeCategorie(id) {
-            if (!esteAdmin) return;
-            if(confirm("Ștergi această categorie și toate exercițiile din ea?")) {
+            if(confirm("Ștergi această categorie din baza de date?")) {
                 database = database.filter(item => item.sectiune !== id);
                 categorii = categorii.filter(c => c.id !== id);
                 tabCurent = categorii.length > 0 ? categorii[0].id : '';
-                
                 construiesteMeniuri();
-                if(tabCurent) schimbaTab(tabCurent, null);
-                else afiseazaDate();
-                ajusteazaFormular();
+                schimbaTab(tabCurent, null);
                 salveazaInCloud();
             }
         }
 
         function ajusteazaFormular() {
-            if (!esteAdmin) return;
             const catId = document.getElementById('sectiune').value;
             if(!catId) return;
             const categorieGasita = categorii.find(c => c.id === catId);
@@ -400,7 +419,6 @@
             tabCurent = tabId;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             if(element) element.classList.add('active');
-            else construiesteMeniuri();
             
             const categorieActiva = categorii.find(c => c.id === tabCurent);
             const esteTipTest = categorieActiva && categorieActiva.tip === 'teste';
@@ -419,10 +437,7 @@
 
         function afiseazaDate() {
             container.innerHTML = '';
-            if(!tabCurent) {
-                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Niciun material disponibil momentan.</p>`;
-                return;
-            }
+            if(!tabCurent) return;
 
             const elementeFiltrate = database.filter(item => item.sectiune === tabCurent);
             const categorieActiva = categorii.find(c => c.id === tabCurent);
@@ -438,8 +453,7 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 
-                // Butonul de ștergere mare se adaugă doar dacă ești logat ca admin
-                let butonStergeAdmin = esteAdmin ? `<button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>` : '';
+                let butonStergeAdmin = (esteAdmin && iaCheiaDeSecuritate() !== 'fara_cheie') ? `<button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>` : '';
 
                 let continutCard = `
                     ${butonStergeAdmin}
@@ -515,8 +529,6 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            if (!esteAdmin) return;
-
             const sectiuneAleasa = document.getElementById('sectiune').value;
             if(!sectiuneAleasa) return;
             const categorieActiva = categorii.find(c => c.id === sectiuneAleasa);
@@ -542,7 +554,6 @@
             database.push(nouMaterial);
             form.reset();
             schimbaTab(sectiuneAleasa, null);
-            ajusteazaFormular();
             salveazaInCloud();
         });
 
@@ -552,7 +563,6 @@
         }
 
         function stergeElement(index) {
-            if (!esteAdmin) return;
             if(confirm("Ștergi definitiv acest material?")) {
                 database.splice(index, 1);
                 afiseazaDate();
@@ -561,7 +571,7 @@
         }
 
         window.onload = () => {
-            verificaDrepturiAdmin();
+            verificaLinkAdmin();
             incarcaDateDinCloud();
         };
     </script>
