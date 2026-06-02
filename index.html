@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematică Hub — Pro v5 Cloud</title>
+    <title>Matematică GT </title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -38,6 +38,7 @@
         header h1 { margin: 0; color: var(--primary); font-size: 2.5rem; }
         header p { color: var(--text-mut); margin-top: 5px; }
 
+        /* Structură flexibilă în funcție de rol (Admin vs Vizitator) */
         .container {
             display: grid;
             grid-template-columns: 1fr;
@@ -45,7 +46,13 @@
         }
 
         @media (min-width: 1000px) {
-            .container { grid-template-columns: 420px 1fr; }
+            body.mod-admin .container { grid-template-columns: 420px 1fr; }
+            body.mod-vizitator .container { grid-template-columns: 1fr; }
+        }
+
+        /* Ascundere elemente de admin pentru vizitatori */
+        body.mod-vizitator .zona-admin {
+            display: none !important;
         }
 
         .nav-tabs {
@@ -82,6 +89,7 @@
         .badge { display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 12px; border: 1px solid #2563eb; }
         .btn-actiune { background: #059669; color: white; border: none; padding: 9px 18px; border-radius: 4px; cursor: pointer; margin-top: 15px; font-weight: bold; }
         .btn-actiune:hover { background: #047857; }
+        
         .btn-sterge { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
         .btn-sterge:hover { background: #b91c1c; }
         .ascuns { display: none; margin-top: 15px; padding: 15px; background: #0f172a; border-left: 4px solid #059669; border-radius: 4px; }
@@ -100,19 +108,19 @@
         .btn-mic-sterge { background: #ef4444; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem; }
         
         #status-incarcare { background: #1e3a8a; color: #93c5fd; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; border: 1px solid #2563eb;}
+        #banner-admin { background: #7c2d12; color: #ffedd5; padding: 6px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ea580c; display: none; }
     </style>
 </head>
-<body>
-
-    <header>
+<body class="mod-vizitator"> <header>
         <h1>📐 Matematică Hub Pro</h1>
-        <p>Bază de date sincronizată online în Cloud</p>
+        <p id="subtitlu-pagina">Platformă de studiu și testare online</p>
     </header>
 
-    <div id="status-incarcare">🔄 Se conectează la baza de date din Cloud...</div>
+    <div id="banner-admin">🛠️ MOD ADMINISTRATOR ACTIVAT: Ai drepturi de adăugare și ștergere.</div>
+    <div id="status-incarcare">🔄 Se conectează la baza de date...</div>
 
     <div class="container">
-        <div>
+        <div class="zona-admin">
             <div class="panou-adaugare">
                 <h2>Adaugă Element Nou</h2>
                 <form id="mainForm">
@@ -163,7 +171,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" id="btn-salveaza" class="btn-block" disabled>Se încarcă baza de date...</button>
+                    <button type="submit" id="btn-salveaza" class="btn-block" disabled>Se încarcă...</button>
                 </form>
             </div>
 
@@ -181,7 +189,7 @@
                         <option value="teste">⏱️ Tip Test Grilă</option>
                     </select>
                 </div>
-                <button type="button" id="btn-creeaza-cat" onclick="adaugaCategorieNoua()" class="btn-block" style="background:#4b5563;" disabled>Așteaptă conexiunea...</button>
+                <button type="button" id="btn-creeaza-cat" onclick="adaugaCategorieNoua()" class="btn-block" style="background:#4b5563;" disabled>Așteaptă...</button>
                 
                 <label style="margin-top:20px;">Categoriile tale active:</label>
                 <ul id="lista-categorii-setari" class="lista-categorii-setari"></ul>
@@ -200,8 +208,6 @@
     </div>
 
     <script>
-        // --- ID UNIQUE CLOUD CLUSTER PENTRU PLATFORMA TA ---
-        // Folosim un cluster securizat anonim pe KVdb.io pentru sincronizare
         const CLOUD_URL = 'https://kvdb.io/6gZ2k922nZ6Y2K964A8U8M/mate_hub_data';
 
         let categorii = [
@@ -213,6 +219,7 @@
         let tabCurent = "teorie"; 
         let scorCorect = 0;
         let intrebariRespondente = 0;
+        let esteAdmin = false; // Implicit, utilizatorul nu este admin
 
         const form = document.getElementById('mainForm');
         const container = document.getElementById('afisaj-materiale');
@@ -220,7 +227,18 @@
         const btnSalveaza = document.getElementById('btn-salveaza');
         const btnCat = document.getElementById('btn-creeaza-cat');
 
-        // DESCARCĂ DATELE DIN CLOUD LA PORNIRE
+        // VERIFICĂ DACĂ LINK-UL CONȚINE PARAMETRUL SECRET PENTRU ADMIN
+        function verificaDrepturiAdmin() {
+            const parametriiLink = new URLSearchParams(window.location.search);
+            if (parametriiLink.get('admin') === 'da') {
+                esteAdmin = true;
+                document.body.classList.remove('mod-vizitator');
+                document.body.classList.add('mod-admin');
+                document.getElementById('banner-admin').style.display = 'block';
+                document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ de Gestionare";
+            }
+        }
+
         async function incarcaDateDinCloud() {
             try {
                 const raspuns = await fetch(CLOUD_URL);
@@ -233,10 +251,10 @@
                 statusBox.style.backgroundColor = "#065f46";
                 statusBox.style.color = "#34d399";
                 statusBox.style.borderColor = "#10b981";
-                statusBox.innerText = "✅ Sincronizat cu succes în Cloud. Site-ul este LIVE!";
+                statusBox.innerText = "✅ Conectat la baza de date online.";
                 
                 btnSalveaza.disabled = false;
-                btnSalveaza.innerText = "Salvează pe Site (Global)";
+                btnSalveaza.innerText = "Salvează pe Site";
                 btnCat.disabled = false;
                 btnCat.innerText = "Creează Categorie în Meniu";
 
@@ -247,17 +265,15 @@
                 console.error(eroare);
                 statusBox.style.backgroundColor = "#991b1b";
                 statusBox.style.color = "#f87171";
-                statusBox.innerText = "❌ Eroare la conectarea în cloud. Se folosește modul offline.";
-                btnSalveaza.disabled = false;
-                btnCat.disabled = false;
+                statusBox.innerText = "❌ Eroare de rețea la descarcare.";
                 construiesteMeniuri();
                 ajusteazaFormular();
                 afiseazaDate();
             }
         }
 
-        // SALVEAZĂ DATELE ÎN CLOUD
         async function salveazaInCloud() {
+            if (!esteAdmin) return; // Un vizitator normal nu poate declanșa salvarea
             try {
                 statusBox.style.backgroundColor = "#1e3a8a";
                 statusBox.style.color = "#93c5fd";
@@ -271,7 +287,7 @@
                 
                 statusBox.style.backgroundColor = "#065f46";
                 statusBox.style.color = "#34d399";
-                statusBox.innerText = "✅ Modificările au fost salvate și transmise tuturor utilizatorilor!";
+                statusBox.innerText = "✅ Modificările au fost salvate cu succes în Cloud!";
             } catch (e) {
                 statusBox.innerText = "⚠️ Eroare la salvarea online!";
             }
@@ -287,8 +303,7 @@
             listaSetari.innerHTML = '';
 
             if (categorii.length === 0) {
-                containerMeniu.innerHTML = '<p style="color:var(--text-mut); padding:10px;">Creează o categorie din panoul de control!</p>';
-                selectFormular.innerHTML = '<option value="">(Nicio categorie disponibilă)</option>';
+                containerMeniu.innerHTML = '<p style="color:var(--text-mut); padding:10px;">Nicio categorie disponibilă.</p>';
                 return;
             }
 
@@ -299,21 +314,24 @@
                 btn.onclick = () => schimbaTab(cat.id, btn);
                 containerMeniu.appendChild(btn);
 
-                const opt = document.createElement('option');
-                opt.value = cat.id;
-                opt.innerText = cat.nume;
-                selectFormular.appendChild(opt);
+                if (esteAdmin) {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.innerText = cat.nume;
+                    selectFormular.appendChild(opt);
 
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span><strong>${cat.nume}</strong> <small style="color:var(--text-mut)">[${cat.tip}]</small></span>
-                    <button class="btn-mic-sterge" onclick="stergeCategorie('${cat.id}')">Șterge</button>
-                `;
-                listaSetari.appendChild(li);
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span><strong>${cat.nume}</strong> <small style="color:var(--text-mut)">[${cat.tip}]</small></span>
+                        <button class="btn-mic-sterge" onclick="stergeCategorie('${cat.id}')">Șterge</button>
+                    `;
+                    listaSetari.appendChild(li);
+                }
             });
         }
 
         function adaugaCategorieNoua() {
+            if (!esteAdmin) return;
             const numeInput = document.getElementById('nouaCategorieNume');
             const tipSelect = document.getElementById('nouaCategorieTip');
             const nume = numeInput.value.trim();
@@ -334,7 +352,8 @@
         }
 
         function stergeCategorie(id) {
-            if(confirm("Ștergerea categoriei va elimina definitiv toate exercițiile din ea de pe toate laptopurile! Continui?")) {
+            if (!esteAdmin) return;
+            if(confirm("Ștergi această categorie și toate exercițiile din ea?")) {
                 database = database.filter(item => item.sectiune !== id);
                 categorii = categorii.filter(c => c.id !== id);
                 tabCurent = categorii.length > 0 ? categorii[0].id : '';
@@ -348,6 +367,7 @@
         }
 
         function ajusteazaFormular() {
+            if (!esteAdmin) return;
             const catId = document.getElementById('sectiune').value;
             if(!catId) return;
             const categorieGasita = categorii.find(c => c.id === catId);
@@ -400,7 +420,7 @@
         function afiseazaDate() {
             container.innerHTML = '';
             if(!tabCurent) {
-                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Adaugă o categorie pentru a începe.</p>`;
+                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Niciun material disponibil momentan.</p>`;
                 return;
             }
 
@@ -409,7 +429,7 @@
             const tipCurent = categorieActiva ? categorieActiva.tip : 'teorie';
 
             if (elementeFiltrate.length === 0) {
-                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Secțiune goală. Datele se descarcă automat din cloud.</p>`;
+                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Secțiune goală.</p>`;
                 return;
             }
 
@@ -418,8 +438,11 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 
+                // Butonul de ștergere mare se adaugă doar dacă ești logat ca admin
+                let butonStergeAdmin = esteAdmin ? `<button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>` : '';
+
                 let continutCard = `
-                    <button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>
+                    ${butonStergeAdmin}
                     <span class="badge">${item.subcategorie}</span>
                     <h3 style="margin: 5px 0 12px 0; color:#93c5fd;">${item.titlu}</h3>
                     <div style="line-height:1.6;">${item.continut.replace(/\n/g, '<br>')}</div>
@@ -492,6 +515,8 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            if (!esteAdmin) return;
+
             const sectiuneAleasa = document.getElementById('sectiune').value;
             if(!sectiuneAleasa) return;
             const categorieActiva = categorii.find(c => c.id === sectiuneAleasa);
@@ -527,7 +552,8 @@
         }
 
         function stergeElement(index) {
-            if(confirm("Ștergi definitiv acest material de pe toate ecranele?")) {
+            if (!esteAdmin) return;
+            if(confirm("Ștergi definitiv acest material?")) {
                 database.splice(index, 1);
                 afiseazaDate();
                 salveazaInCloud();
@@ -535,6 +561,7 @@
         }
 
         window.onload = () => {
+            verificaDrepturiAdmin();
             incarcaDateDinCloud();
         };
     </script>
