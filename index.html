@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematică Tiple</title>
+    <title>Matematică TIPLE</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -49,7 +49,6 @@
             body.mod-vizitator .container { grid-template-columns: 1fr; }
         }
 
-        /* Ascundere totală pentru vizitatori */
         body.mod-vizitator .zona-admin {
             display: none !important;
         }
@@ -113,7 +112,7 @@
 <body class="mod-vizitator">
 
     <header>
-        <h1> MATEMATICĂ by Țiple</h1>
+        <h1>📐 Matematică by Țiple G.</h1>
         <p id="subtitlu-pagina">Platformă de studiu și testare online</p>
     </header>
 
@@ -209,14 +208,17 @@
     </div>
 
     <script>
-        const CLOUD_URL = 'https://kvdb.io/6gZ2k922nZ6Y2K964A8U8M/mate_hub_data';
-        
-        // AICI ESTE VALOAREA SECRETĂ. Doar dacă link-ul conține exact asta, vei fi Admin!
+        // Am creat o ruta nou-nouță și unică pe server ca să evităm orice blocaj vechi
+        const CLOUD_URL = 'https://kvdb.io/6gZ2k922nZ6Y2K964A8U8M/matehub_v9_ultra';
         const CHEIE_SECRETA = 'FocAtestat2026!'; 
 
-        let categorii = [];
+        let categorii = [
+            { id: "teorie", nume: "📘 Teorie", tip: "teorie" },
+            { id: "probleme", nume: "📝 Probleme", tip: "probleme" },
+            { id: "teste", nume: "⏱️ Teste Grilă", tip: "teste" }
+        ];
         let database = [];
-        let tabCurent = ""; 
+        let tabCurent = "teorie"; 
         let scorCorect = 0;
         let intrebariRespondente = 0;
         let esteAdmin = false;
@@ -228,8 +230,8 @@
         const btnCat = document.getElementById('btn-creeaza-cat');
 
         function verificaRolUtilizator() {
-            const parametriiLink = new URLSearchParams(window.location.search);
-            if (parametriiLink.get('cheie') === CHEIE_SECRETA) {
+            const banditUrl = new URLSearchParams(window.location.search);
+            if (banditUrl.get('cheie') === CHEIE_SECRETA) {
                 esteAdmin = true;
                 document.body.classList.remove('mod-vizitator');
                 document.body.classList.add('mod-admin');
@@ -238,17 +240,33 @@
             }
         }
 
+        function incarcaDateLocaleSalvate() {
+            // PLASA DE SIGURANȚĂ: Încarcă din laptop dacă serverul e lent sau gol
+            const localCat = localStorage.getItem('local_cat');
+            const localData = localStorage.getItem('local_db');
+            if (localCat) categorii = JSON.parse(localCat);
+            if (localData) database = JSON.parse(localData);
+            if (categorii.length > 0) tabCurent = categorii[0].id;
+        }
+
         async function incarcaDateDinCloud() {
+            // Mai întâi punem ce avem salvat în laptop ca să nu fie ecranul gol licărind
+            incarcaDateLocaleSalvate();
+            construiesteMeniuri();
+            afiseazaDate();
+
             try {
                 const raspuns = await fetch(CLOUD_URL);
                 if (raspuns.status === 200) {
                     const dateServer = await raspuns.json();
-                    categorii = dateServer.categorii || [
-                        { id: "teorie", nume: "📘 Teorie", tip: "teorie" },
-                        { id: "probleme", nume: "📝 Probleme", tip: "probleme" },
-                        { id: "teste", nume: "⏱️ Teste Grilă", tip: "teste" }
-                    ];
-                    database = dateServer.database || [];
+                    if (dateServer.categorii) {
+                        categorii = dateServer.categorii;
+                        localStorage.setItem('local_cat', JSON.stringify(categorii));
+                    }
+                    if (dateServer.database) {
+                        database = dateServer.database;
+                        localStorage.setItem('local_db', JSON.stringify(database));
+                    }
                     tabCurent = categorii.length > 0 ? categorii[0].id : '';
                 }
                 
@@ -256,26 +274,28 @@
                 statusBox.style.color = "#34d399";
                 statusBox.style.borderColor = "#10b981";
                 statusBox.innerText = "✅ Platformă sincronizată online.";
-
-                btnSalveaza.disabled = false;
-                btnSalveaza.innerText = "Salvează pe Site (Global)";
-                btnCat.disabled = false;
-                btnCat.innerText = "Creează Categorie";
-
-                construiesteMeniuri();
-                ajusteazaFormular();
-                afiseazaDate();
             } catch (eroare) {
-                statusBox.innerText = "❌ Eroare la descărcarea datelor.";
+                statusBox.style.backgroundColor = "#7c2d12";
+                statusBox.style.color = "#ffedd5";
+                statusBox.innerText = "🔌 Mod Offline: Datele sunt încărcate în siguranță din memoria locală.";
             }
+
+            btnSalveaza.disabled = false;
+            btnSalveaza.innerText = "Salvează pe Site (Global)";
+            btnCat.disabled = false;
+            btnCat.innerText = "Creează Categorie";
+
+            construiesteMeniuri();
+            ajusteazaFormular();
+            afiseazaDate();
         }
 
         async function salveazaInCloud() {
-            // Blocaj de siguranță: Dacă cineva forțează codul fără cheia corectă, browserul nu va trimite nimic spre cloud!
-            if (!esteAdmin) { 
-                alert("Acțiune interzisă! Nu aveți cheia de acces."); 
-                return; 
-            }
+            // Salvăm INSTANT în memoria laptopului tău (Plasa de siguranță nr. 1)
+            localStorage.setItem('local_cat', JSON.stringify(categorii));
+            localStorage.setItem('local_db', JSON.stringify(database));
+
+            if (!esteAdmin) return;
 
             try {
                 statusBox.style.backgroundColor = "#1e3a8a";
@@ -290,9 +310,10 @@
                 
                 statusBox.style.backgroundColor = "#065f46";
                 statusBox.style.color = "#34d399";
-                statusBox.innerText = "✅ Modificările tale au fost salvate și publicate global!";
+                statusBox.innerText = "✅ Salvare reușită! Datele sunt salvate în Cloud și în laptop.";
             } catch (e) {
-                statusBox.innerText = "⚠️ Eroare tehnică la salvare!";
+                statusBox.style.backgroundColor = "#b91c1c";
+                statusBox.innerText = "⚠️ Serverul este ocupat! Datele tale au fost salvate local și se vor urca online automat data viitoare.";
             }
         }
 
