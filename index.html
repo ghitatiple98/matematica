@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematică Hub — Pro v7 Securizat Profesional</title>
+    <title>Matematică Tiple</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -49,6 +49,7 @@
             body.mod-vizitator .container { grid-template-columns: 1fr; }
         }
 
+        /* Ascundere totală pentru vizitatori */
         body.mod-vizitator .zona-admin {
             display: none !important;
         }
@@ -106,29 +107,17 @@
         .btn-mic-sterge { background: #ef4444; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem; }
         
         #status-incarcare { background: #1e3a8a; color: #93c5fd; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; border: 1px solid #2563eb;}
-        
-        /* Panou portocaliu pentru autorizare */
-        #panou-autorizare { background: #7c2d12; color: #ffedd5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ea580c; display: none; }
-        .flex-auth { display: flex; gap: 10px; margin-top: 8px; }
-        .flex-auth input { flex: 1; padding: 8px; }
-        .flex-auth button { background: #ea580c; color: white; border: none; padding: 0 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        #banner-admin { background: #16a34a; color: white; padding: 6px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border-radius: 4px; border: 1px solid #15803d; display: none; }
     </style>
 </head>
 <body class="mod-vizitator">
 
     <header>
-        <h1>📐 Matematică Hub Pro</h1>
+        <h1> MATEMATICĂ by Țiple</h1>
         <p id="subtitlu-pagina">Platformă de studiu și testare online</p>
     </header>
 
-    <div id="panou-autorizare">
-        <strong>🔒 Autentificare Administrator Obligatorie:</strong>
-        <div class="flex-auth">
-            <input type="password" id="cheie-secreta-input" placeholder="Introduceți parola de securitate...">
-            <button onclick="salveazaCheiaLocala()">Conectare</button>
-        </div>
-    </div>
-
+    <div id="banner-admin">🛠️ CONECTAT CA ADMINISTRATOR — Panoul de adăugare este activ.</div>
     <div id="status-incarcare">🔄 Se conectează la baza de date...</div>
 
     <div class="container">
@@ -221,6 +210,9 @@
 
     <script>
         const CLOUD_URL = 'https://kvdb.io/6gZ2k922nZ6Y2K964A8U8M/mate_hub_data';
+        
+        // AICI ESTE VALOAREA SECRETĂ. Doar dacă link-ul conține exact asta, vei fi Admin!
+        const CHEIE_SECRETA = 'FocAtestat2026!'; 
 
         let categorii = [];
         let database = [];
@@ -235,28 +227,15 @@
         const btnSalveaza = document.getElementById('btn-salveaza');
         const btnCat = document.getElementById('btn-creeaza-cat');
 
-        // VERIFICARE PARAMETRU LINK
-        function verificaLinkAdmin() {
+        function verificaRolUtilizator() {
             const parametriiLink = new URLSearchParams(window.location.search);
-            if (parametriiLink.get('admin') === 'da') {
+            if (parametriiLink.get('cheie') === CHEIE_SECRETA) {
                 esteAdmin = true;
-                document.getElementById('panou-autorizare').style.display = 'block';
+                document.body.classList.remove('mod-vizitator');
+                document.body.classList.add('mod-admin');
+                document.getElementById('banner-admin').style.display = 'block';
+                document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ de Gestionare";
             }
-        }
-
-        // SALVEAZĂ PAROLA ÎN MEMORIA BROWSERULUI TĂU PENTRU A NU O SCRIE DE FIECARE DATĂ
-        function salveazaCheiaLocala() {
-            const valoare = document.getElementById('cheie-secreta-input').value.trim();
-            if(valoare) {
-                localStorage.setItem('mate_hub_secret_key', valoare);
-                alert("Parola a fost salvată local! Reîncărcăm pagina pentru activare.");
-                window.location.reload();
-            }
-        }
-
-        // OBTINE PAROLA DIN MEMORIE (DACA EXISTA) SAU ATRIBUIE VALOARE INVALIDA
-        function iaCheiaDeSecuritate() {
-            return localStorage.getItem('mate_hub_secret_key') || 'fara_cheie';
         }
 
         async function incarcaDateDinCloud() {
@@ -264,7 +243,11 @@
                 const raspuns = await fetch(CLOUD_URL);
                 if (raspuns.status === 200) {
                     const dateServer = await raspuns.json();
-                    categorii = dateServer.categorii || [{ id: "teorie", nume: "📘 Teorie", tip: "teorie" }];
+                    categorii = dateServer.categorii || [
+                        { id: "teorie", nume: "📘 Teorie", tip: "teorie" },
+                        { id: "probleme", nume: "📝 Probleme", tip: "probleme" },
+                        { id: "teste", nume: "⏱️ Teste Grilă", tip: "teste" }
+                    ];
                     database = dateServer.database || [];
                     tabCurent = categorii.length > 0 ? categorii[0].id : '';
                 }
@@ -272,54 +255,42 @@
                 statusBox.style.backgroundColor = "#065f46";
                 statusBox.style.color = "#34d399";
                 statusBox.style.borderColor = "#10b981";
-                statusBox.innerText = "✅ Conectat la baza de date online.";
+                statusBox.innerText = "✅ Platformă sincronizată online.";
 
-                // Daca ai deschis ca admin si ai o parola setata, deblocam vizual interfata
-                if (esteAdmin && iaCheiaDeSecuritate() !== 'fara_cheie') {
-                    document.body.classList.remove('mod-vizitator');
-                    document.body.classList.add('mod-admin');
-                    document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ Securizat";
-                }
-                
                 btnSalveaza.disabled = false;
-                btnSalveaza.innerText = "Salvează pe Site";
+                btnSalveaza.innerText = "Salvează pe Site (Global)";
                 btnCat.disabled = false;
-                btnCat.innerText = "Creează Categorie în Meniu";
+                btnCat.innerText = "Creează Categorie";
 
                 construiesteMeniuri();
                 ajusteazaFormular();
                 afiseazaDate();
             } catch (eroare) {
-                statusBox.innerText = "❌ Eroare la descarcarea datelor.";
+                statusBox.innerText = "❌ Eroare la descărcarea datelor.";
             }
         }
 
         async function salveazaInCloud() {
+            // Blocaj de siguranță: Dacă cineva forțează codul fără cheia corectă, browserul nu va trimite nimic spre cloud!
+            if (!esteAdmin) { 
+                alert("Acțiune interzisă! Nu aveți cheia de acces."); 
+                return; 
+            }
+
             try {
                 statusBox.style.backgroundColor = "#1e3a8a";
                 statusBox.style.color = "#93c5fd";
-                statusBox.innerText = "🔄 Se trimit datele criptate în Cloud...";
+                statusBox.innerText = "🔄 Se salvează modificările în Cloud...";
                 
-                // Trimitem schimbarile adăugând în Header cheia ta secreta (parola ta devine cheie de scriere pe server)
-                const raspuns = await fetch(CLOUD_URL, {
+                await fetch(CLOUD_URL, {
                     method: 'POST',
                     body: JSON.stringify({ categorii: categorii, database: database }),
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + iaCheiaDeSecuritate()
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 
-                if(raspuns.status === 401 || raspuns.status === 403) {
-                    statusBox.style.backgroundColor = "#991b1b";
-                    statusBox.style.color = "#f87171";
-                    statusBox.innerText = "❌ EROARE: Parola introdusă este greșită! Serverul a respins modificarea.";
-                    alert("Parolă incorectă! Schimbările tale NU s-au salvat online.");
-                } else {
-                    statusBox.style.backgroundColor = "#065f46";
-                    statusBox.style.color = "#34d399";
-                    statusBox.innerText = "✅ Securizat! Modificările au fost salvate cu succes în Cloud.";
-                }
+                statusBox.style.backgroundColor = "#065f46";
+                statusBox.style.color = "#34d399";
+                statusBox.innerText = "✅ Modificările tale au fost salvate și publicate global!";
             } catch (e) {
                 statusBox.innerText = "⚠️ Eroare tehnică la salvare!";
             }
@@ -358,6 +329,7 @@
         }
 
         function adaugaCategorieNoua() {
+            if (!esteAdmin) return;
             const numeInput = document.getElementById('nouaCategorieNume');
             const tipSelect = document.getElementById('nouaCategorieTip');
             const nume = numeInput.value.trim();
@@ -376,7 +348,8 @@
         }
 
         function stergeCategorie(id) {
-            if(confirm("Ștergi această categorie din baza de date?")) {
+            if (!esteAdmin) return;
+            if(confirm("Ștergi această categorie?")) {
                 database = database.filter(item => item.sectiune !== id);
                 categorii = categorii.filter(c => c.id !== id);
                 tabCurent = categorii.length > 0 ? categorii[0].id : '';
@@ -387,6 +360,7 @@
         }
 
         function ajusteazaFormular() {
+            if (!esteAdmin) return;
             const catId = document.getElementById('sectiune').value;
             if(!catId) return;
             const categorieGasita = categorii.find(c => c.id === catId);
@@ -453,7 +427,7 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 
-                let butonStergeAdmin = (esteAdmin && iaCheiaDeSecuritate() !== 'fara_cheie') ? `<button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>` : '';
+                let butonStergeAdmin = esteAdmin ? `<button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>` : '';
 
                 let continutCard = `
                     ${butonStergeAdmin}
@@ -529,6 +503,8 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            if (!esteAdmin) return;
+
             const sectiuneAleasa = document.getElementById('sectiune').value;
             if(!sectiuneAleasa) return;
             const categorieActiva = categorii.find(c => c.id === sectiuneAleasa);
@@ -563,6 +539,7 @@
         }
 
         function stergeElement(index) {
+            if (!esteAdmin) return;
             if(confirm("Ștergi definitiv acest material?")) {
                 database.splice(index, 1);
                 afiseazaDate();
@@ -571,7 +548,7 @@
         }
 
         window.onload = () => {
-            verificaLinkAdmin();
+            verificaRolUtilizator();
             incarcaDateDinCloud();
         };
     </script>
