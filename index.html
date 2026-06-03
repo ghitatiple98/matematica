@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matematică TIPLE</title>
+    <title>Matematică Hub — Cloud Google Edition</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -38,37 +38,19 @@
         header h1 { margin: 0; color: var(--primary); font-size: 2.5rem; }
         header p { color: var(--text-mut); margin-top: 5px; }
 
-        .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
+        .container { display: grid; grid-template-columns: 1fr; gap: 30px; }
         @media (min-width: 1000px) {
             body.mod-admin .container { grid-template-columns: 420px 1fr; }
             body.mod-vizitator .container { grid-template-columns: 1fr; }
         }
 
-        body.mod-vizitator .zona-admin {
-            display: none !important;
-        }
+        body.mod-vizitator .zona-admin { display: none !important; }
 
-        .nav-tabs {
-            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; background: #0f172a; padding: 6px; border-radius: 8px; border: 1px solid var(--border);
-        }
-
-        .tab-btn {
-            flex: 1; min-width: 100px; padding: 12px; background: none; border: none; color: var(--text-mut); font-weight: bold; cursor: pointer; border-radius: 6px; transition: all 0.2s;
-        }
-
-        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
-
-        .panou-adaugare, .zona-continut, .panou-setari {
+        .panou-adaugare, .zona-continut {
             background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid var(--border); height: fit-content; margin-bottom: 25px;
         }
 
         h2 { margin-top: 0; font-size: 1.4rem; color: #60a5fa; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
-
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; color: #cbd5e1; }
         input, textarea, select {
@@ -83,13 +65,14 @@
         button.btn-block:hover { background: var(--primary-hover); }
         button:disabled { background: #475569 !important; cursor: not-allowed; opacity: 0.6; }
 
+        .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; background: #0f172a; padding: 6px; border-radius: 8px; border: 1px solid var(--border); }
+        .tab-btn { flex: 1; min-width: 100px; padding: 12px; background: none; border: none; color: var(--text-mut); font-weight: bold; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
+
         .card { background: #1e293b; border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; position: relative; }
         .badge { display: inline-block; background: #1e3a8a; color: #93c5fd; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 12px; border: 1px solid #2563eb; }
         .btn-actiune { background: #059669; color: white; border: none; padding: 9px 18px; border-radius: 4px; cursor: pointer; margin-top: 15px; font-weight: bold; }
         .btn-actiune:hover { background: #047857; }
-        
-        .btn-sterge { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        .btn-sterge:hover { background: #b91c1c; }
         .ascuns { display: none; margin-top: 15px; padding: 15px; background: #0f172a; border-left: 4px solid #059669; border-radius: 4px; }
 
         .grila-optiuni { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
@@ -100,10 +83,6 @@
         
         .feedback-test { margin-top: 15px; padding: 12px; border-radius: 6px; display: none; font-size: 0.95rem; }
         .scor-box { background: #0f172a; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #60a5fa; border: 1px solid var(--border); }
-
-        .lista-categorii-setari { list-style: none; padding: 0; margin: 15px 0 0 0; }
-        .lista-categorii-setari li { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #0f172a; margin-bottom: 5px; border-radius: 4px; border: 1px solid var(--border); font-size: 0.9rem; }
-        .btn-mic-sterge { background: #ef4444; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.75rem; }
         
         #status-incarcare { background: #1e3a8a; color: #93c5fd; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; border: 1px solid #2563eb;}
         #banner-admin { background: #16a34a; color: white; padding: 6px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; border-radius: 4px; border: 1px solid #15803d; display: none; }
@@ -112,12 +91,12 @@
 <body class="mod-vizitator">
 
     <header>
-        <h1>📐 Matematică by Țiple G.</h1>
-        <p id="subtitlu-pagina">Platformă de studiu și testare online</p>
+        <h1>📐 Matematică Hub Pro</h1>
+        <p id="subtitlu-pagina">Platformă interactivă de studiu conectată la Google Drive</p>
     </header>
 
-    <div id="banner-admin">🛠️ CONECTAT CA ADMINISTRATOR — Panoul de adăugare este activ.</div>
-    <div id="status-incarcare">🔄 Se conectează la baza de date...</div>
+    <div id="banner-admin">🛠️ CONECTAT CA ADMINISTRATOR — Orice adaugi se salvează direct în Google Sheets!</div>
+    <div id="status-incarcare">🔄 Se conectează la serviciul Google Cloud...</div>
 
     <div class="container">
         <div class="zona-admin">
@@ -125,8 +104,12 @@
                 <h2>Adaugă Element Nou</h2>
                 <form id="mainForm">
                     <div class="form-group">
-                        <label for="sectiune">Alege Categoria Principală</label>
-                        <select id="sectiune" onchange="ajusteazaFormular()"></select>
+                        <label for="sectiune">Alege Secțiunea</label>
+                        <select id="sectiune" onchange="ajusteazaFormular()">
+                            <option value="teorie">📘 Teorie</option>
+                            <option value="probleme">📝 Probleme Rezolvate</option>
+                            <option value="teste">⏱️ Teste Grilă</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -136,17 +119,17 @@
 
                     <div class="form-group">
                         <label for="subcategorie">Subcategorie / Clasă</label>
-                        <input type="text" id="subcategorie" placeholder="Ex: Algebră - Clasa a IX-a" required>
+                        <input type="text" id="subcategorie" placeholder="Ex: Clasa a IX-a" required>
                     </div>
 
                     <div class="form-group">
-                        <label id="label-continut" for="continut">Conținut</label>
-                        <textarea id="continut" placeholder="Scrieți textul aici..." required></textarea>
+                        <label id="label-continut" for="continut">Conținut / Enunț</label>
+                        <textarea id="continut" placeholder="Scrieți textul sau formulele matematice..." required></textarea>
                     </div>
 
-                    <div id="zona-clasica-raspuns" class="form-group">
+                    <div id="zona-clasica-raspuns" class="form-group" style="display: none;">
                         <label id="label-raspuns" for="raspuns">Rezolvare Detaliată</label>
-                        <textarea id="raspuns" placeholder="Pașii de rezolvare..."></textarea>
+                        <textarea id="raspuns" placeholder="Pașii de rezolvare ai problemei..."></textarea>
                     </div>
 
                     <div id="zona-grila" style="display: none;">
@@ -171,33 +154,17 @@
                         </div>
                     </div>
 
-                    <button type="submit" id="btn-salveaza" class="btn-block" disabled>Se încarcă...</button>
+                    <button type="submit" id="btn-salveaza" class="btn-block" disabled>Se sincronizează...</button>
                 </form>
-            </div>
-
-            <div class="panou-setari">
-                <h2>⚙️ Panou Control: Categorii noi</h2>
-                <div class="form-group">
-                    <label for="nouaCategorieNume">Nume Categorie Nouă</label>
-                    <input type="text" id="nouaCategorieNume" placeholder="Ex: Variante BAC">
-                </div>
-                <div class="form-group">
-                    <label for="nouaCategorieTip">Tipul de conținut</label>
-                    <select id="nouaCategorieTip">
-                        <option value="teorie">📘 Tip Teorie</option>
-                        <option value="probleme">📝 Tip Problemă</option>
-                        <option value="teste">⏱️ Tip Test Grilă</option>
-                    </select>
-                </div>
-                <button type="button" id="btn-creeaza-cat" onclick="adaugaCategorieNoua()" class="btn-block" style="background:#4b5563;" disabled>Așteaptă...</button>
-                
-                <label style="margin-top:20px;">Categoriile tale active:</label>
-                <ul id="lista-categorii-setari" class="lista-categorii-setari"></ul>
             </div>
         </div>
 
         <div class="zona-continut">
-            <div class="nav-tabs" id="container-butoane-meniu"></div>
+            <div class="nav-tabs">
+                <button class="tab-btn active" id="btn-tab-teorie" onclick="schimbaTab('teorie')">📘 Teorie</button>
+                <button class="tab-btn" id="btn-tab-probleme" onclick="schimbaTab('probleme')">📝 Probleme</button>
+                <button class="tab-btn" id="btn-tab-teste" onclick="schimbaTab('teste')">⏱️ Teste Grilă</button>
+            </div>
 
             <div id="scor-container" class="scor-box" style="display: none;">
                 Scor curent: <span id="puncte-corecte">0</span> din <span id="total-teste">0</span> întrebări încercate
@@ -208,15 +175,10 @@
     </div>
 
     <script>
-        // Am creat o ruta nou-nouță și unică pe server ca să evităm orice blocaj vechi
-        const CLOUD_URL = 'https://kvdb.io/6gZ2k922nZ6Y2K964A8U8M/matehub_v9_ultra';
-        const CHEIE_SECRETA = 'FocAtestat2026!'; 
+        // INLOCUIEȘTE MAI JOS CU LINK-UL GENERAT DE STEIN:
+        const STEIN_URL = "https://api.steinhq.com/v1/storages/6a1fecf392b1163e9700dd69/sheet1";
+        const CHEIE_SECRETA = "FocAtestat2026!"; 
 
-        let categorii = [
-            { id: "teorie", nume: "📘 Teorie", tip: "teorie" },
-            { id: "probleme", nume: "📝 Probleme", tip: "probleme" },
-            { id: "teste", nume: "⏱️ Teste Grilă", tip: "teste" }
-        ];
         let database = [];
         let tabCurent = "teorie"; 
         let scorCorect = 0;
@@ -227,252 +189,113 @@
         const container = document.getElementById('afisaj-materiale');
         const statusBox = document.getElementById('status-incarcare');
         const btnSalveaza = document.getElementById('btn-salveaza');
-        const btnCat = document.getElementById('btn-creeaza-cat');
 
         function verificaRolUtilizator() {
-            const banditUrl = new URLSearchParams(window.location.search);
-            if (banditUrl.get('cheie') === CHEIE_SECRETA) {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('cheie') === CHEIE_SECRETA) {
                 esteAdmin = true;
                 document.body.classList.remove('mod-vizitator');
                 document.body.classList.add('mod-admin');
                 document.getElementById('banner-admin').style.display = 'block';
-                document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ de Gestionare";
+                document.getElementById('subtitlu-pagina').innerText = "Panou Administrativ conectat la Google Drive";
             }
         }
 
-        function incarcaDateLocaleSalvate() {
-            // PLASA DE SIGURANȚĂ: Încarcă din laptop dacă serverul e lent sau gol
-            const localCat = localStorage.getItem('local_cat');
-            const localData = localStorage.getItem('local_db');
-            if (localCat) categorii = JSON.parse(localCat);
-            if (localData) database = JSON.parse(localData);
-            if (categorii.length > 0) tabCurent = categorii[0].id;
-        }
-
-        async function incarcaDateDinCloud() {
-            // Mai întâi punem ce avem salvat în laptop ca să nu fie ecranul gol licărind
-            incarcaDateLocaleSalvate();
-            construiesteMeniuri();
-            afiseazaDate();
-
+        async function incarcaDateDinGoogleSheets() {
             try {
-                const raspuns = await fetch(CLOUD_URL);
+                const raspuns = await fetch(STEIN_URL);
                 if (raspuns.status === 200) {
-                    const dateServer = await raspuns.json();
-                    if (dateServer.categorii) {
-                        categorii = dateServer.categorii;
-                        localStorage.setItem('local_cat', JSON.stringify(categorii));
-                    }
-                    if (dateServer.database) {
-                        database = dateServer.database;
-                        localStorage.setItem('local_db', JSON.stringify(database));
-                    }
-                    tabCurent = categorii.length > 0 ? categorii[0].id : '';
+                    database = await raspuns.json();
                 }
                 
                 statusBox.style.backgroundColor = "#065f46";
                 statusBox.style.color = "#34d399";
                 statusBox.style.borderColor = "#10b981";
-                statusBox.innerText = "✅ Platformă sincronizată online.";
+                statusBox.innerText = "✅ Sincronizat cu Google Sheets. Datele sunt live!";
+                btnSalveaza.disabled = false;
+                btnSalveaza.innerText = "Salvează în Google Sheets";
+                
+                afiseazaDate();
             } catch (eroare) {
-                statusBox.style.backgroundColor = "#7c2d12";
-                statusBox.style.color = "#ffedd5";
-                statusBox.innerText = "🔌 Mod Offline: Datele sunt încărcate în siguranță din memoria locală.";
-            }
-
-            btnSalveaza.disabled = false;
-            btnSalveaza.innerText = "Salvează pe Site (Global)";
-            btnCat.disabled = false;
-            btnCat.innerText = "Creează Categorie";
-
-            construiesteMeniuri();
-            ajusteazaFormular();
-            afiseazaDate();
-        }
-
-        async function salveazaInCloud() {
-            // Salvăm INSTANT în memoria laptopului tău (Plasa de siguranță nr. 1)
-            localStorage.setItem('local_cat', JSON.stringify(categorii));
-            localStorage.setItem('local_db', JSON.stringify(database));
-
-            if (!esteAdmin) return;
-
-            try {
-                statusBox.style.backgroundColor = "#1e3a8a";
-                statusBox.style.color = "#93c5fd";
-                statusBox.innerText = "🔄 Se salvează modificările în Cloud...";
-                
-                await fetch(CLOUD_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ categorii: categorii, database: database }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                statusBox.style.backgroundColor = "#065f46";
-                statusBox.style.color = "#34d399";
-                statusBox.innerText = "✅ Salvare reușită! Datele sunt salvate în Cloud și în laptop.";
-            } catch (e) {
-                statusBox.style.backgroundColor = "#b91c1c";
-                statusBox.innerText = "⚠️ Serverul este ocupat! Datele tale au fost salvate local și se vor urca online automat data viitoare.";
+                statusBox.innerText = "❌ Eroare la conectarea cu Google Drive.";
+                console.error(eroare);
             }
         }
 
-        function construiesteMeniuri() {
-            const containerMeniu = document.getElementById('container-butoane-meniu');
-            const selectFormular = document.getElementById('sectiune');
-            const listaSetari = document.getElementById('lista-categorii-setari');
-
-            containerMeniu.innerHTML = '';
-            selectFormular.innerHTML = '';
-            listaSetari.innerHTML = '';
-
-            categorii.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = `tab-btn ${cat.id === tabCurent ? 'active' : ''}`;
-                btn.innerText = cat.nume;
-                btn.onclick = () => schimbaTab(cat.id, btn);
-                containerMeniu.appendChild(btn);
-
-                if (esteAdmin) {
-                    const opt = document.createElement('option');
-                    opt.value = cat.id;
-                    opt.innerText = cat.nume;
-                    selectFormular.appendChild(opt);
-
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span><strong>${cat.nume}</strong></span>
-                        <button class="btn-mic-sterge" onclick="stergeCategorie('${cat.id}')">Șterge</button>
-                    `;
-                    listaSetari.appendChild(li);
-                }
-            });
-        }
-
-        function adaugaCategorieNoua() {
-            if (!esteAdmin) return;
-            const numeInput = document.getElementById('nouaCategorieNume');
-            const tipSelect = document.getElementById('nouaCategorieTip');
-            const nume = numeInput.value.trim();
-            const tip = tipSelect.value;
-
-            if(!nume) return;
-            const id = nume.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-            categorii.push({ id: id, nume: nume, tip: tip });
-            numeInput.value = '';
-            tabCurent = id;
-            
-            construiesteMeniuri();
-            schimbaTab(tabCurent, null);
-            salveazaInCloud();
-        }
-
-        function stergeCategorie(id) {
-            if (!esteAdmin) return;
-            if(confirm("Ștergi această categorie?")) {
-                database = database.filter(item => item.sectiune !== id);
-                categorii = categorii.filter(c => c.id !== id);
-                tabCurent = categorii.length > 0 ? categorii[0].id : '';
-                construiesteMeniuri();
-                schimbaTab(tabCurent, null);
-                salveazaInCloud();
-            }
-        }
-
-        function ajusteazaFormular() {
-            if (!esteAdmin) return;
-            const catId = document.getElementById('sectiune').value;
-            if(!catId) return;
-            const categorieGasita = categorii.find(c => c.id === catId);
-            if (!categorieGasita) return;
-
-            const tip = categorieGasita.tip;
-            const zonaClasica = document.getElementById('zona-clasica-raspuns');
-            const zonaGrila = document.getElementById('zona-grila');
-
-            if (tip === 'teorie') {
-                document.getElementById('label-titlu').innerText = "Titlu Lecție";
-                document.getElementById('label-continut').innerText = "Conținut Teorie";
-                zonaClasica.style.display = 'none';
-                zonaGrila.style.display = 'none';
-            } else if (tip === 'probleme') {
-                document.getElementById('label-titlu').innerText = "Titlu Problemă";
-                document.getElementById('label-continut').innerText = "Enunț Problemă";
-                document.getElementById('label-raspuns').innerText = "Rezolvare Detaliată";
-                zonaClasica.style.display = 'block';
-                zonaGrila.style.display = 'none';
-            } else if (tip === 'teste') {
-                document.getElementById('label-titlu').innerText = "Întrebare Test";
-                document.getElementById('label-continut').innerText = "Enunț / Cerință Întrebare";
-                zonaClasica.style.display = 'none';
-                zonaGrila.style.display = 'block';
-            }
-        }
-
-        function schimbaTab(tabId, element) {
+        function schimbaTab(tabId) {
             tabCurent = tabId;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            if(element) element.classList.add('active');
             
-            const categorieActiva = categorii.find(c => c.id === tabCurent);
-            const esteTipTest = categorieActiva && categorieActiva.tip === 'teste';
-
-            document.getElementById('scor-container').style.display = esteTipTest ? 'block' : 'none';
-            if(esteTipTest) resetScor();
+            if(tabId === 'teorie') document.getElementById('btn-tab-teorie').classList.add('active');
+            if(tabId === 'probleme') document.getElementById('btn-tab-probleme').classList.add('active');
+            if(tabId === 'teste') document.getElementById('btn-tab-teste').classList.add('active');
+            
+            document.getElementById('scor-container').style.display = tabId === 'teste' ? 'block' : 'none';
+            if(tabId === 'teste') resetScor();
             afiseazaDate();
         }
 
         function resetScor() {
-            scorCorect = 0;
-            intrebariRespondente = 0;
+            scorCorect = 0; intrebariRespondente = 0;
             document.getElementById('puncte-corecte').innerText = scorCorect;
             document.getElementById('total-teste').innerText = intrebariRespondente;
         }
 
+        function ajusteazaFormular() {
+            const sectiune = document.getElementById('sectiune').value;
+            const zonaClasica = document.getElementById('zona-clasica-raspuns');
+            const zonaGrila = document.getElementById('zona-grila');
+
+            if (sectiune === 'teorie') {
+                document.getElementById('label-titlu').innerText = "Titlu Lecție";
+                document.getElementById('label-continut').innerText = "Conținut Teorie";
+                zonaClasica.style.display = 'none'; zonaGrila.style.display = 'none';
+            } else if (sectiune === 'probleme') {
+                document.getElementById('label-titlu').innerText = "Titlu Problemă";
+                document.getElementById('label-continut').innerText = "Enunț Problemă";
+                zonaClasica.style.display = 'block'; zonaGrila.style.display = 'none';
+            } else if (sectiune === 'teste') {
+                document.getElementById('label-titlu').innerText = "Întrebare Test";
+                document.getElementById('label-continut').innerText = "Cerință Întrebare";
+                zonaClasica.style.display = 'none'; zonaGrila.style.display = 'block';
+            }
+        }
+
         function afiseazaDate() {
             container.innerHTML = '';
-            if(!tabCurent) return;
-
             const elementeFiltrate = database.filter(item => item.sectiune === tabCurent);
-            const categorieActiva = categorii.find(c => c.id === tabCurent);
-            const tipCurent = categorieActiva ? categorieActiva.tip : 'teorie';
 
             if (elementeFiltrate.length === 0) {
-                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Secțiune goală.</p>`;
+                container.innerHTML = `<p style="color: var(--text-mut); text-align: center; padding: 20px;">Nu există materiale adăugate în Google Sheets pentru această secțiune.</p>`;
                 return;
             }
 
-            elementeFiltrate.forEach((item) => {
-                const realIndex = database.indexOf(item); 
+            elementeFiltrate.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                
-                let butonStergeAdmin = esteAdmin ? `<button class="btn-sterge" onclick="stergeElement(${realIndex})">Șterge</button>` : '';
 
                 let continutCard = `
-                    ${butonStergeAdmin}
                     <span class="badge">${item.subcategorie}</span>
                     <h3 style="margin: 5px 0 12px 0; color:#93c5fd;">${item.titlu}</h3>
-                    <div style="line-height:1.6;">${item.continut.replace(/\n/g, '<br>')}</div>
+                    <div style="line-height:1.6;">${item.continut}</div>
                 `;
 
-                if (tipCurent === 'probleme') {
+                if (tabCurent === 'probleme') {
                     continutCard += `
-                        <button class="btn-actiune" onclick="toggleCasuta(${realIndex})">Vezi Rezolvarea</button>
-                        <div id="box-${realIndex}" class="ascuns">
-                            <strong style="color:#10b981;">Rezolvare:</strong><br><p>${item.raspuns.replace(/\n/g, '<br>')}</p>
+                        <button class="btn-actiune" onclick="toggleCasuta(${index})">Vezi Rezolvarea</button>
+                        <div id="box-${index}" class="ascuns">
+                            <strong style="color:#10b981;">Rezolvare:</strong><br><p>${item.raspuns}</p>
                         </div>
                     `;
-                } else if (tipCurent === 'teste') {
+                } else if (tabCurent === 'teste') {
                     continutCard += `
-                        <div class="grila-optiuni" id="grila-container-${realIndex}">
-                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, '${realIndex}', 'A')"><strong>A:</strong> ${item.optA}</div>
-                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, '${realIndex}', 'B')"><strong>B:</strong> ${item.optB}</div>
-                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, '${realIndex}', 'C')"><strong>C:</strong> ${item.optC}</div>
-                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, '${realIndex}', 'D')"><strong>D:</strong> ${item.optD}</div>
+                        <div class="grila-optiuni" id="grila-container-${index}">
+                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, ${index}, 'A')"><strong>A:</strong> ${item.optA}</div>
+                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, ${index}, 'B')"><strong>B:</strong> ${item.optB}</div>
+                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, ${index}, 'C')"><strong>C:</strong> ${item.optC}</div>
+                            <div class="optiune-atacabila" onclick="verificaRaspuns(this, ${index}, 'D')"><strong>D:</strong> ${item.optD}</div>
                         </div>
-                        <div id="feedback-${realIndex}" class="feedback-test"></div>
+                        <div id="feedback-${index}" class="feedback-test"></div>
                     `;
                 }
 
@@ -489,10 +312,12 @@
             });
         }
 
-        function verificaRaspuns(elementSelectat, indexReal, literaAleasa) {
-            const item = database[indexReal];
-            const containerGrila = document.getElementById(`grila-container-${indexReal}`);
-            const feedbackBox = document.getElementById(`feedback-${indexReal}`);
+        function verificaRaspuns(elementSelectat, indexFiltrat, literaAleasa) {
+            const elementeFiltrate = database.filter(item => item.sectiune === tabCurent);
+            const item = elementeFiltrate[indexFiltrat];
+            const containerGrila = document.getElementById(`grila-container-${indexFiltrat}`);
+            const feedbackBox = document.getElementById(`feedback-${indexFiltrat}`);
+            
             if (containerGrila.classList.contains('respondent')) return;
             containerGrila.classList.add('respondent');
 
@@ -509,10 +334,10 @@
                 feedbackBox.style.backgroundColor = "rgba(16, 185, 129, 0.15)";
                 feedbackBox.style.color = "#34d399";
                 feedbackBox.style.border = "1px solid #10b981";
-                feedbackBox.innerHTML = "<strong>🌟 Corect!</strong> " + (item.explicatieGrila ? item.explicatieGrila : "");
+                feedbackBox.innerHTML = "<strong>🌟 Corect!</strong> " + (item.explicatieGrila || "");
             } else {
                 elementSelectat.classList.add('optiune-gresita');
-                copii[indexCorect].classList.add('optiune-corecta');
+                if(indexCorect !== -1) copii[indexCorect].classList.add('optiune-corecta');
                 feedbackBox.style.display = "block";
                 feedbackBox.style.backgroundColor = "rgba(239, 68, 68, 0.15)";
                 feedbackBox.style.color = "#f87171";
@@ -522,36 +347,48 @@
             renderMathInElement(feedbackBox, { delimiters: [{left: '$', right: '$', display: false}] });
         }
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             if (!esteAdmin) return;
 
-            const sectiuneAleasa = document.getElementById('sectiune').value;
-            if(!sectiuneAleasa) return;
-            const categorieActiva = categorii.find(c => c.id === sectiuneAleasa);
+            btnSalveaza.disabled = true;
+            btnSalveaza.innerText = "🔄 Se trimite în Google Sheets...";
+            statusBox.innerText = "⏳ Se încarcă rândul nou în Excel...";
 
-            let nouMaterial = {
+            const sectiuneAleasa = document.getElementById('sectiune').value;
+
+            let dateDeTrimis = {
                 sectiune: sectiuneAleasa,
                 titlu: document.getElementById('titlu').value,
                 subcategorie: document.getElementById('subcategorie').value,
-                continut: document.getElementById('continut').value
+                continut: document.getElementById('continut').value,
+                raspuns: document.getElementById('raspuns').value || "",
+                optA: document.getElementById('optA').value || "",
+                optB: document.getElementById('optB').value || "",
+                optC: document.getElementById('optC').value || "",
+                optD: document.getElementById('optD').value || "",
+                raspunsCorectGrila: document.getElementById('raspunsCorectGrila').value || "",
+                explicatieGrila: document.getElementById('explicatieGrila').value || ""
             };
 
-            if (categorieActiva.tip === 'teste') {
-                nouMaterial.optA = document.getElementById('optA').value;
-                nouMaterial.optB = document.getElementById('optB').value;
-                nouMaterial.optC = document.getElementById('optC').value;
-                nouMaterial.optD = document.getElementById('optD').value;
-                nouMaterial.raspunsCorectGrila = document.getElementById('raspunsCorectGrila').value;
-                nouMaterial.explicatieGrila = document.getElementById('explicatieGrila').value;
-            } else {
-                nouMaterial.raspuns = document.getElementById('raspuns').value;
-            }
+            try {
+                const raspunsFetch = await fetch(STEIN_URL, {
+                    method: "POST",
+                    body: JSON.stringify([dateDeTrimis]),
+                    headers: { "Content-Type": "application/json" }
+                });
 
-            database.push(nouMaterial);
-            form.reset();
-            schimbaTab(sectiuneAleasa, null);
-            salveazaInCloud();
+                if(raspunsFetch.ok) {
+                    form.reset();
+                    await incarcaDateDinGoogleSheets();
+                    schimbaTab(sectiuneAleasa);
+                } else {
+                    alert("Eroare la trimiterea datelor.");
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Eroare de rețea.");
+            }
         });
 
         function toggleCasuta(index) {
@@ -559,18 +396,10 @@
             box.style.display = (box.style.display === 'block') ? 'none' : 'block';
         }
 
-        function stergeElement(index) {
-            if (!esteAdmin) return;
-            if(confirm("Ștergi definitiv acest material?")) {
-                database.splice(index, 1);
-                afiseazaDate();
-                salveazaInCloud();
-            }
-        }
-
         window.onload = () => {
+            ajusteazaFormular();
             verificaRolUtilizator();
-            incarcaDateDinCloud();
+            incarcaDateDinGoogleSheets();
         };
     </script>
 </body>
